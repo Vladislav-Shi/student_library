@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Главная станица</title>
+    {% load bootstrap5 %} {% bootstrap_css %} {% bootstrap_javascript %}
+  </head>
+  <body>
+    <h1>Вывод книг</h1>
+    <form method="get" action="">
+      <h2>Форма фильтрации</h2>
+      <div class="mb-3">
+        <label for="fieldAuthor" class="form-label">Автор</label>
+        <input
+          type="text"
+          class="form-control"
+          id="fieldAuthor"
+          name="{{form.author.name}}"
+          placeholder="введите автора"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="fieldAuthor" class="form-label">Шазвание</label>
+        <input
+          type="text"
+          class="form-control"
+          id="fieldAuthor"
+          name="{{form.title.name}}"
+          placeholder="введите название"
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Искать</button>
+    </form>
+    <div>
+      <h2>Список книг</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <td scope="col">Id</td>
+            <td scope="col">Title</td>
+            <td scope="col">url</td>
+            <td scope="col">isbn</td>
+            <td scope="col">year</td>
+            <td scope="col">pages</td>
+            <td scope="col">authors</td>
+          </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr>
+                <th scope="row">{{ book.google_id }}</th>
+                <td>{{ book.title }}</td>
+                <td><a href="{{ book.info_url }}">{{ book.info_url|truncatechars:50 }}</a></td>
+                <td>{{ book.isbn }}</td>
+                <td>{{ book.year }}</td>
+                <td>{{ book.pages }}</td>
+
+                <td>{% for author in book.authors.all %}
+                    {{author.name}} 
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if is_paginated %}
+        <div class="pagination">
+            <span class="page-links">
+                {% if page_obj.has_previous %}
+                    <a href="{% url 'book-list' %}?page={{ page_obj.previous_page_number }}&title={{request.GET.title}}&author={{request.GET.author}}">previous</a>
+                {% endif %}
+                <span class="page-current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="{% url 'book-list' %}?page={{ page_obj.next_page_number }}&title={{request.GET.title}}&author={{request.GET.author}}">next</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+  </body>
+</html>

@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "student-library"
+version = "0.1.0"
+description = ""
+authors = ["Vladislav-Shi <vlad.shirobockow@yandex.ru>"]
+readme = "README.md"
+packages = [{include = "student_library"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pillow = "^10.2.0"
+django = "^4"
+django-bootstrap-v5 = "^1.0.11"
+pandas = "^2.1.4"
+openpyxl = "^3.1.2"
+google-api-python-client = "^2.114.0"
+celery = "^5.3.6"
+redis = "^5.0.1"
+django-celery-beat = "^2.5.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

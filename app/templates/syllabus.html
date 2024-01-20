@@ -1,0 +1,17 @@
+<div class="mb-3">
+  <label for="Input_direction_of_study" class="form-label">Направление обучения</label>
+  <input type="text" class="form-control" id="Input_direction_of_study" name="{{form.direction_of_study.name}}"/>
+</div>
+<div class="mb-3">
+  <label for="Input_university" class="form-label">Университет</label>
+  <input type="text" class="form-control" id="Input_university" name="{{form.university.name}}"/>
+</div>
+<div class="mb-3">
+    <label for="Input_yeat" class="form-label">Год принятия</label>
+    <input type="number" class="form-control" id="Input_yeat" name="{{form.year.name}}"/>
+</div>
+<div class="input-group mb-3">
+    <label class="input-group-text" for="inputGroupFile01">Загрузите excel</label>
+    <input type="file" class="form-control" id="inputGroupFile01" name="{{form.excel_file.name}}">
+</div>
+<button type="submit" class="btn btn-primary">Отправить</button>
