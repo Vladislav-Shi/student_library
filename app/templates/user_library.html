@@ -1,0 +1,38 @@
+
+{% extends "base_template.html" %}
+
+{% block title %}Учетная запись{% endblock %}
+
+{% block content %}
+    <h1>Сохраненные книги</h1>
+    <table class="table">
+        <thead>
+          <tr>
+            <td scope="col">Id</td>
+            <td scope="col">Title</td>
+            <td scope="col">url</td>
+            <td scope="col">isbn</td>
+            <td scope="col">year</td>
+            <td scope="col">pages</td>
+            <td scope="col">authors</td>
+          </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr>
+                <th scope="row">{{ book.google_id }}</th>
+                <td>{{ book.title }}</td>
+                <td><a href="{{ book.info_url }}">{{ book.info_url|truncatechars:50 }}</a></td>
+                <td>{{ book.isbn }}</td>
+                <td>{{ book.year }}</td>
+                <td>{{ book.pages }}</td>
+    
+                <td>{% for author in book.authors.all %}
+                    {{author.name}} 
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+{% endblock %}

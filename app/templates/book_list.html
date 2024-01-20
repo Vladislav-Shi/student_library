@@ -1,85 +1,146 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Главная станица</title>
-    {% load bootstrap5 %} {% bootstrap_css %} {% bootstrap_javascript %}
-  </head>
-  <body>
-    <h1>Вывод книг</h1>
-    <form method="get" action="">
-      <h2>Форма фильтрации</h2>
-      <div class="mb-3">
-        <label for="fieldAuthor" class="form-label">Автор</label>
-        <input
-          type="text"
-          class="form-control"
-          id="fieldAuthor"
-          name="{{form.author.name}}"
-          placeholder="введите автора"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="fieldAuthor" class="form-label">Шазвание</label>
-        <input
-          type="text"
-          class="form-control"
-          id="fieldAuthor"
-          name="{{form.title.name}}"
-          placeholder="введите название"
-        />
-      </div>
+{% extends "base_template.html" %}
 
-      <button type="submit" class="btn btn-primary">Искать</button>
-    </form>
-    <div>
-      <h2>Список книг</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <td scope="col">Id</td>
-            <td scope="col">Title</td>
-            <td scope="col">url</td>
-            <td scope="col">isbn</td>
-            <td scope="col">year</td>
-            <td scope="col">pages</td>
-            <td scope="col">authors</td>
-          </tr>
-        </thead>
-        <tbody>
-            {% for book in books %}
-            <tr>
-                <th scope="row">{{ book.google_id }}</th>
-                <td>{{ book.title }}</td>
-                <td><a href="{{ book.info_url }}">{{ book.info_url|truncatechars:50 }}</a></td>
-                <td>{{ book.isbn }}</td>
-                <td>{{ book.year }}</td>
-                <td>{{ book.pages }}</td>
+{% block title %}Список книг{% endblock %}
 
-                <td>{% for author in book.authors.all %}
-                    {{author.name}} 
-                    {% endfor %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% if is_paginated %}
-        <div class="pagination">
-            <span class="page-links">
-                {% if page_obj.has_previous %}
-                    <a href="{% url 'book-list' %}?page={{ page_obj.previous_page_number }}&title={{request.GET.title}}&author={{request.GET.author}}">previous</a>
-                {% endif %}
-                <span class="page-current">
-                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                </span>
-                {% if page_obj.has_next %}
-                    <a href="{% url 'book-list' %}?page={{ page_obj.next_page_number }}&title={{request.GET.title}}&author={{request.GET.author}}">next</a>
-                {% endif %}
+{% block content %}
+<h1>Вывод книг</h1>
+<form method="get" action="">
+  <h2>Форма фильтрации</h2>
+  <div class="mb-3">
+    <label for="fieldAuthor" class="form-label">Автор</label>
+    <input
+      type="text"
+      class="form-control"
+      id="fieldAuthor"
+      name="{{form.author.name}}"
+      placeholder="введите автора"
+    />
+  </div>
+  <div class="mb-3">
+    <label for="fieldAuthor" class="form-label">Шазвание</label>
+    <input
+      type="text"
+      class="form-control"
+      id="fieldAuthor"
+      name="{{form.title.name}}"
+      placeholder="введите название"
+    />
+  </div>
+
+  <button type="submit" class="btn btn-primary">Искать</button>
+</form>
+<div>
+  <h2>Список книг</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <td scope="col">Id</td>
+        <td scope="col">Title</td>
+        <td scope="col">url</td>
+        <td scope="col">isbn</td>
+        <td scope="col">year</td>
+        <td scope="col">pages</td>
+        <td scope="col">authors</td>
+        <td scope="col">Добавить</td>
+      </tr>
+    </thead>
+    <tbody>
+        {% for book in books %}
+        <tr>
+            <th scope="row">{{ book.google_id }}</th>
+            <td>{{ book.title }}</td>
+            <td><a href="{{ book.info_url }}">{{ book.info_url|truncatechars:50 }}</a></td>
+            <td>{{ book.isbn }}</td>
+            <td>{{ book.year }}</td>
+            <td>{{ book.pages }}</td>
+
+            <td>{% for author in book.authors.all %}
+                {{author.name}} 
+                {% endfor %}
+            </td>
+            {% if book.google_id in favs %}
+            <td><button id="Btn-{{book.google_id}}" class="btn btn-outline-danger" onclick="deleteFromFavorite('{{book.google_id}}')">-</button></td>
+            {% else %}
+            <td><button id="Btn-{{book.google_id}}" class="btn btn-outline-success" onclick="addToFavorite('{{book.google_id}}')">+</button></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if is_paginated %}
+    <div class="pagination">
+        <span class="page-links">
+            {% if page_obj.has_previous %}
+                <a href="{% url 'book-list' %}?page={{ page_obj.previous_page_number }}&title={{request.GET.title}}&author={{request.GET.author}}">previous</a>
+            {% endif %}
+            <span class="page-current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
             </span>
-        </div>
-    {% endif %}
-  </body>
-</html>
+            {% if page_obj.has_next %}
+                <a href="{% url 'book-list' %}?page={{ page_obj.next_page_number }}&title={{request.GET.title}}&author={{request.GET.author}}">next</a>
+            {% endif %}
+        </span>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block script %}
+<script>
+  function addToFavorite(book_id)
+  {
+    const url = "{{home_path}}favorite/add/" + book_id + "/";
+    console.log(url)
+    fetch(url)
+        .then(response => {
+            // Проверяем успешность запроса (статус 200-299)
+            if (!response.ok) {
+                throw new Error(`Network response was not ok, status: ${response.status}`);
+            }
+            // Возвращаем JSON из ответа
+            return response.json();
+        })
+        .then(data => {
+            // Обрабатываем полученные данные
+            var button = document.getElementById('Btn-' + book_id);
+            button.className = 'btn btn-outline-danger';
+            button.onclick = function() {
+              deleteFromFavorite(book_id);
+            };
+            button.innerHTML = '-'
+        })
+        .catch(error => {
+            // Обрабатываем ошибку
+            console.error('Error:', error);
+        });
+  }
+  function deleteFromFavorite(book_id)
+  {
+    const url = "{{home_path}}favorite/delete/" + book_id + "/";
+    console.log(url)
+    fetch(url)
+        .then(response => {
+            // Проверяем успешность запроса (статус 200-299)
+            if (!response.ok) {
+                throw new Error(`Network response was not ok, status: ${response.status}`);
+            }
+            // Возвращаем JSON из ответа
+            return response.json();
+        })
+        .then(data => {
+            // Обрабатываем полученные данные
+            var button = document.getElementById('Btn-' + book_id);
+            button.className = 'btn btn-outline-success';
+            button.onclick = function() {
+              addToFavorite(book_id);
+            };
+            button.innerHTML = '+'
+        })
+        .catch(error => {
+            // Обрабатываем ошибку
+            console.error('Error:', error);
+        });
+  }
+</script>
+{% endblock %}

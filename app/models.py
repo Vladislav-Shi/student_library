@@ -1,7 +1,16 @@
 from datetime import datetime
 from typing import List
 
+from django.contrib.auth.models import User
 from django.db import models
+
+
+class YourModelManager(models.Manager):
+    def get_or_none(self, **kwargs):
+        try:
+            return self.get(**kwargs)
+        except self.model.DoesNotExist:
+            return None
 
 
 # Create your models here.
@@ -9,6 +18,8 @@ class Author(models.Model):
     """Модель автора книги"""
     name = models.CharField(verbose_name='имя автора', max_length=64, unique=True)
     description = models.TextField(verbose_name='информация об авторе', null=True, blank=True)
+
+    objects = YourModelManager()
 
     @classmethod
     def bulk_get_or_create(cls, names_list: List[str]):
@@ -57,6 +68,8 @@ class Book(models.Model):
     year = models.CharField(verbose_name='Год издания', max_length=16, null=True, blank=True)
     pages = models.IntegerField(verbose_name='Кол-во страниц', null=True, blank=True)
 
+    objects = YourModelManager()
+
     def __repr__(self) -> str:
         return f'{self.pk}:{self.title}'
 
@@ -99,3 +112,20 @@ class Discipline(models.Model):
     class Meta:
         verbose_name = 'Дисциплина'
         verbose_name_plural = 'Дисциплины'
+
+
+class UserFavorite(models.Model):
+    """Добавленные книги"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Аккаунт', related_name='user_favorites')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name='Книга', related_name='user_favorites')
+
+    def __repr__(self) -> str:
+        return f'{self.pk}:{self.user} - {self.book}'
+
+    def __str__(self):
+        return f'{self.pk}:{self.user} - {self.book}'
+
+    @classmethod
+    def get_user_books(cls, user) -> List[Book]:
+        favs = cls.objects.filter(user=user)
+        return [fav.book for fav in favs]

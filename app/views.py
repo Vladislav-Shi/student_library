@@ -1,11 +1,15 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
 from django.shortcuts import render
+from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView
 
 from utils.exel_parse import get_raw_disciplines
 from .forms import SyllabusForm, BookFilterForm
-from .models import Book, Syllabus, Discipline
+from .models import Book, Syllabus, Discipline, UserFavorite
 from .tasks import get_books_for_program
 
 
@@ -84,4 +88,54 @@ class BookList(ListView):
         context = super().get_context_data(**kwargs)
         # Передаем форму фильтра в контекст
         context['form'] = BookFilterForm(self.request.GET)
+        favs = Book.objects.filter(user_favorites__user=self.request.user,
+                                              pk__in=[book.pk for book in context['books']])
+        context['favs'] = [fav.google_id for fav in favs]
+        context['home_path'] = self.request.build_absolute_uri(reverse('home'))
         return context
+
+
+class BookListFavorite(LoginRequiredMixin, ListView):
+    """Вьюха для вывода добавленных книг"""
+    template_name = 'user_library.html'
+    model = Book
+    context_object_name = 'books'
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = UserFavorite.get_user_books(self.request.user)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Передаем форму фильтра в контекст
+        context['form'] = BookFilterForm(self.request.GET)
+        context['home_path'] = self.request.build_absolute_uri(reverse('home'))
+        return context
+
+
+@login_required
+def add_to_favorites(request, book_id):
+    """Сохраняет книгу в избранное"""
+    book = Book.objects.get_or_none(google_id=book_id)
+    if book is None:
+        return JsonResponse({'error': 'Не найдена книга'}, status=404)
+    if not UserFavorite.objects.filter(user=request.user, book=book).exists():
+        # Если нет, создаем запись в UserFavorite
+        UserFavorite.objects.create(user=request.user, book=book)
+        return JsonResponse({'success': 'Книга добавлена в избранное'})
+    return JsonResponse({'error': 'Книга уже добавлена в избранное'}, status=400)
+
+
+@login_required
+def delete_from_favorites(request, book_id):
+    """Сохраняет книгу в избранное"""
+    book = Book.objects.get_or_none(google_id=book_id)
+    if book is None:
+        return JsonResponse({'error': 'Не найдена книга'}, status=404)
+    obj = UserFavorite.objects.filter(user=request.user, book=book)
+    if obj.exists():
+        obj.delete()
+        return JsonResponse({'success': 'Книга убрана из избранное'})
+    return JsonResponse({'error': 'Книга не добавлена'}, status=400)
+
