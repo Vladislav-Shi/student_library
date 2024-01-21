@@ -76,11 +76,11 @@ class BookList(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         title = self.request.GET.get('title')
-        authors = self.request.GET.getlist('authors')
+        author = self.request.GET.get('author')
         if title:
             queryset = queryset.filter(title__icontains=title)
-        if authors:
-            queryset = queryset.filter(authors__in=authors)
+        if author:
+            queryset = queryset.filter(authors__name__icontains=author)
 
         return queryset
 
