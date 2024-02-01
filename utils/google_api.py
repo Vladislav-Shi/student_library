@@ -52,3 +52,8 @@ def parse_book(res: list) -> List[BookModel]:
             'year': year
         })
     return books
+
+
+def get_book_for_id(book_id: str, api_key: str):
+    """Получает информацию о книге по id"""
+    pass

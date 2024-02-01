@@ -17,6 +17,7 @@ google-api-python-client = "^2.114.0"
 celery = "^5.3.6"
 redis = "^5.0.1"
 django-celery-beat = "^2.5.0"
+xlrd = "^2.0.1"
 
 
 [build-system]
