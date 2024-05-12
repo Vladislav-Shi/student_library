@@ -1,0 +1,94 @@
+
+{% extends "base_template.html" %}
+
+{% block title %}Добавить книгу{% endblock %}
+
+{% block content %}
+    <h1>Добавить книгу в библиотеку</h1>
+    <div class="row">
+    <div class="col">
+        <form method="get" action="">
+            <h2>Классический способ</h2>
+            <div class="mb-3">
+                <div class="row">
+                    <div class="col-10"><p class="form-label">Авторы</p></div>
+                    <div class="col"><button type="button" class="btn btn-primary" onclick="addAuthorField()">+</button></div>
+                    
+                </div>
+                <div id="AuthorDiv">
+                    <small class="text-muted">Оставьте пустым если добавили лишние поля</small>
+                    <input class="form-control" type="text" name="author" placeholder="Введите имя автора">
+                </div>
+
+            </div>
+            <div class="mb-3">
+              <label for="fieldAuthor" class="form-label">Название книги</label>
+              <input
+                type="text"
+                class="form-control"
+                id="fieldAuthor"
+                name="title"
+                placeholder="введите название"
+              />
+            </div>
+
+            <div class="mb-3">
+                <label for="fieldPages" class="form-label">Кол-во страниц</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="fieldPages"
+                  name="pages"
+                  placeholder="введите кол-во страниц"
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="fieldISBN" class="form-label">Номер ISBN</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="fieldISBN"
+                  name="isbn"
+                  placeholder="введите ISBN"
+                />
+              </div>
+
+          
+            <button type="submit" class="btn btn-primary">Добавить</button>
+          </form>
+    </div>
+    <div class="col">
+        <h2>По url</h2>
+        <form action="get">
+            <div class="mb-3">
+                <label for="fieldUrl" class="form-label">Url на google books</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="fieldUrl"
+                  name="url"
+                  placeholder="введите url"
+                />
+              </div>
+            <button type="submit" class="btn btn-primary">Добавить</button>
+        </form>
+    </div>
+    </div>
+
+{% endblock %}
+{% block script %}
+<script>
+    function addAuthorField(){
+        var form = document.getElementById('AuthorDiv');
+
+        var newInput = document.createElement('input');
+        newInput.type = 'text';
+        newInput.name = 'author';
+        newInput.placeholder = 'Введите имя автора'; 
+        newInput.classList.add('form-control');
+
+        form.appendChild(newInput);
+    }
+</script>
+{% endblock %}
