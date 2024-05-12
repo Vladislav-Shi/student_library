@@ -74,12 +74,17 @@
                                            for="form3Example4cdg">{{user_form.password2.label}}</label>
                                 </div>
 
-                                <div class="form-check d-flex justify-content-center mb-5">
-                                    <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3cg"/>
-                                    <label class="form-check-label" for="form2Example3g">
-                                        I agree all statements in <a href="#!" class="text-body"><u>Terms of service</u></a>
-                                    </label>
+                                <div class="form-outline mb-4">
+                                    <select class="form-select" aria-label="Default select example" name="univer_name">
+                                      <option value="-" selected>Не выбрано</option>
+                                        {% for name in all_university_names %}
+                                            <option value="{{name}}">{{ name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label class="form-label"
+                                           for="form3Example5cdg">Выберите университет</label>
                                 </div>
+
 
                                 <div class="d-flex justify-content-center">
                                     <button type="submit"

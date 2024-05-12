@@ -129,3 +129,18 @@ class UserFavorite(models.Model):
     def get_user_books(cls, user) -> List[Book]:
         favs = cls.objects.filter(user=user)
         return [fav.book for fav in favs]
+
+
+class UserUniversities(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Аккаунт', related_name='syllabus')
+    university_name = models.CharField(verbose_name='Имя университета', max_length=128, null=True, blank=True)
+    syllabus = models.ForeignKey(Syllabus, on_delete=models.CASCADE, verbose_name='Направление', related_name='user', null=True)
+
+    objects = YourModelManager()
+    @classmethod
+    def get_all_universities(cls) -> list[str]:
+        """Получить названия всех университетов в базе"""
+        all_univer = Syllabus.objects.all()
+        univer_names = list(all_univer.values_list('university', flat=True))
+        return univer_names
+

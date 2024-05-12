@@ -8,7 +8,7 @@ from django.views.generic import ListView
 
 from utils.exel_parse import get_raw_disciplines_plan
 from .forms import SyllabusForm, BookFilterForm
-from .models import Book, Syllabus, Discipline, UserFavorite, Author
+from .models import Book, Syllabus, Discipline, UserFavorite, UserUniversities
 from .tasks import get_books_for_program
 
 
@@ -74,12 +74,20 @@ class BookList(LoginRequiredMixin, ListView):
     context_object_name = 'books'
     paginate_by = 20
 
+    def get_paginate_by(self, queryset):
+        # Переопределение paginate_by на основе параметра запроса или другой логики
+        page_size = self.request.GET.get('page_size', self.paginate_by)
+        try:
+            if int(page_size) > 0: return page_size
+            return self.paginate_by
+        except:
+            return self.paginate_by
+
     def get_queryset(self):
         queryset = super().get_queryset()
         title = self.request.GET.get('title')
         author = self.request.GET.get('author')
         par = self.request.GET.getlist('par')
-        print('par', par)
         if title:
             queryset = queryset.filter(title__icontains=title)
         if author:
@@ -94,6 +102,7 @@ class BookList(LoginRequiredMixin, ListView):
         favs = Book.objects.filter(user_favorites__user=self.request.user,
                                    pk__in=[book.pk for book in context['books']])
         context['favs'] = [fav.google_id for fav in favs]
+        context['page_size'] = self.get_paginate_by(self.queryset)
         context['home_path'] = self.request.build_absolute_uri(reverse('home'))
         return context
 
@@ -113,6 +122,12 @@ class BookListFavorite(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         # Передаем форму фильтра в контекст
         context['form'] = BookFilterForm(self.request.GET)
+        univer = UserUniversities.objects.get_or_none(user=self.request.user)
+        if univer:
+            univer = univer.university_name
+        else:
+            univer = '-'
+        context['university_name'] = univer
         context['home_path'] = self.request.build_absolute_uri(reverse('home'))
         return context
 

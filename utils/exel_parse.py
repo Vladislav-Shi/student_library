@@ -31,10 +31,6 @@ def get_raw_disciplines_plan(fp) -> list:
     return df.to_dict(orient='records')
 
 
-
-
-
-
 if __name__ == '__main__':
     x = get_raw_disciplines_plan(
         '/home/vladislav/PycharmProjects/student_library/xlsx/09_04_03_Prikladnaya_informatika_Informatsionnoe_obespechenie-2020.xlsx')

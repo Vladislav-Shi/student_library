@@ -8,6 +8,11 @@
 <body>
     <!-- <form action=""> -->
         <div id="AuthorDiv">
+            <form action="get">
+                <input type="text" name="author">
+                <input type="text" name="author">
+                <button type="submit">Отправить</button>
+            </form>
             <label for="AuthorField1">AuthorField1</label>
             <input type="text" id="AuthorField1"  placeholder="поле AuthorField1">
             <button type="button" id="AuthorFieldBtn1" onclick="AddAuthor()">+</button>
@@ -19,9 +24,7 @@
     <script>
         function AddAuthor()
         {
-            console.log('dfgsdf')
-            elem = document.getElementById("AuthorDiv")
-            console.log(elem)
+
         }
     </script>
 </body>
