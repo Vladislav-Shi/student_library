@@ -21,7 +21,7 @@ def register(request):
             else:
                 UserUniversities.objects.create(user=new_user)
 
-            return render(request, 'register_done.html', {'new_user': new_user})
+            return render(request, 'registration/register_done.html', {'new_user': new_user})
         else:
             p = ''
             for field, errors in user_form.errors.items():
